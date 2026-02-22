@@ -75,7 +75,7 @@ async def on_message(message):
     # 🎲 주사위
     if content == "주사위":
         result = random.randint(1, 6)
-        await message.channel.send(f"🎲 {result}!")
+        await message.channel.send(f"🎲 {result}")
         await bot.process_commands(message)
         return
 
@@ -89,7 +89,7 @@ async def on_message(message):
             result = "지는 게 이기는 거에요"
         else:
             result = "이겼다"
-        await message.channel.send(f" {bot_choice} {result}")
+        await message.channel.send(f" {bot_choice}! {result}")
         await bot.process_commands(message)
         return
 
@@ -140,5 +140,6 @@ async def ping(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
 
 
