@@ -38,7 +38,7 @@ responses = {
     ("토키슌이치",):                                              "아...빠...?",
     ("린타로",):                                              "어디서 들어본 목소리에요",
     ("오리너구리", "오구리"):                                              "🥰",
-    ("자폭",):                                              "1107",
+    ("자폭",):                                              "",
     ("귀여워",):                                              "아... 그쪽 취향...",
 
 }
@@ -128,32 +128,6 @@ async def on_message(message):
     await bot.process_commands(message)
 
 # ─────────────────────────────────────────
-# 🍱 급식 조회
-# ─────────────────────────────────────────
-async def get_meal(date: str):
-    url = "https://open.neis.go.kr/hub/mealServiceDietInfo"
-    params = {
-        "KEY": NEIS_KEY,
-        "Type": "json",
-        "ATPT_OFCDC_SC_CODE": OFFICE_CODE,
-        "SD_SCHUL_CODE": SCHOOL_CODE,
-        "MLSV_YMD": date,
-    }
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as resp:
-            data = await resp.json()
-            try:
-                meals = data["mealServiceDietInfo"][1]["row"]
-                result = ""
-                for meal in meals:
-                    menu = meal["DDISH_NM"].replace("<br/>", "\n").replace(" ", " ")
-                    cal = meal["CAL_INFO"]
-                    result += f"🍱 **{meal['MMEAL_SC_NM']}**\n{menu}\n칼로리: {cal}\n\n"
-                return result.strip()
-            except:
-                return None
-
-# ─────────────────────────────────────────
 # ✅ 봇 준비
 # ─────────────────────────────────────────
 @bot.event
@@ -171,6 +145,7 @@ async def ping(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
 
 
 
