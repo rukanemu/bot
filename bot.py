@@ -3,8 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 import yt_dlp
 import random
-
-TOKEN = "TOKEN"
+import os
+TOKEN = os.environ.get("TOKEN")
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -114,5 +114,6 @@ async def on_ready():
 async def ping(interaction: discord.Interaction):
     latency = round(bot.latency * 1000)
     await interaction.response.send_message(f"🏓 퐁! `{latency}ms`")
+
 
 bot.run(TOKEN)
