@@ -70,6 +70,27 @@ async def on_message(message):
         await bot.process_commands(message)
         return
 
+    # 🎲 주사위
+    if content == "주사위":
+        result = random.randint(1, 6)
+        await message.channel.send(f"🎲 {result}!")
+        await bot.process_commands(message)
+        return
+
+    # ✂️ 가위바위보
+    if content in ("가위", "바위", "보"):
+        bot_choice = random.choice(["가위", "바위", "보"])
+        wins = {"가위": "보", "바위": "가위", "보": "바위"}
+        if content == bot_choice:
+            result = "비겼어요!"
+        elif wins[content] == bot_choice:
+            result = "졌어요ㅠ"
+        else:
+            result = "이겼어요!"
+        await message.channel.send(f"저는 {bot_choice}! {result}")
+        await bot.process_commands(message)
+        return
+
     # 노래 검색
     if content.startswith("노래 "):
         query = content[3:].strip()
@@ -117,3 +138,4 @@ async def ping(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
