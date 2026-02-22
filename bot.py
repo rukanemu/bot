@@ -33,6 +33,8 @@ responses = {
     ("토키슌이치",):                                              "아...빠...?",
     ("린타로",):                                              "어디서 들어본 목소리에요",
     ("오리너구리", "오구리"):                                              "🥰",
+    ("자폭",):                                              "1107",
+    ("귀여워",):                                              "아... 그쪽 취향...",
 
 }
 
@@ -82,12 +84,12 @@ async def on_message(message):
         bot_choice = random.choice(["가위", "바위", "보"])
         wins = {"가위": "보", "바위": "가위", "보": "바위"}
         if content == bot_choice:
-            result = "비겼어요!"
+            result = "다시"
         elif wins[content] == bot_choice:
-            result = "졌어요ㅠ"
+            result = "지는 게 이기는 거에요"
         else:
-            result = "이겼어요!"
-        await message.channel.send(f"저는 {bot_choice}! {result}")
+            result = "이겼다"
+        await message.channel.send(f" {bot_choice} {result}")
         await bot.process_commands(message)
         return
 
@@ -138,4 +140,5 @@ async def ping(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
 
