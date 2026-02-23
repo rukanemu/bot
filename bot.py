@@ -107,6 +107,12 @@ async def on_message(message):
         await bot.process_commands(message)
         return
 
+    # 🐶 짖어
+    if content == "짖어":
+        await message.channel.send(file=discord.File("voice_card_ev_shuffle_44_16_2b_55_16.mp3"))
+        await bot.process_commands(message)
+        return
+    
     # 🎲 주사위
     if content == "주사위":
         result = random.randint(1, 6)
@@ -174,6 +180,7 @@ async def ping(interaction: discord.Interaction):
     await interaction.response.send_message(f"🏓 퐁! `{latency}ms`")
 
 bot.run(TOKEN)
+
 
 
 
