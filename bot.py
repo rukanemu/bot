@@ -47,8 +47,14 @@ responses = {
     ("세레아스",):                                                 "아... 그건 좀...",
     ("다이츠키",):                                                 "기분이 좀 안 좋네요",
     ("일어나",):                                                 "왜 명령을 하시는거죠?",
-    ("개",):                                                 "으르르르르",
     ("빵",):                                                 "나는 쓰러지지 않는다",
+    ("잠뜰",):                                                 "🐳🩵",
+    ("각별",):                                                 "⭐💛",
+    ("수현",):                                                 "🐰💜",
+    ("라더",):                                                 "🦈❤️",
+    ("공룡",):                                                 "🦖💚",
+    ("덕개",):                                                 "🐕🧡",
+    ("개",):                                                 "으르르르르",
 }
 
 DEFAULT_RESPONSE = "잘 모르겠어요..."
@@ -181,6 +187,7 @@ async def ping(interaction: discord.Interaction):
     await interaction.response.send_message(f"🏓 퐁! `{latency}ms`")
 
 bot.run(TOKEN)
+
 
 
 
