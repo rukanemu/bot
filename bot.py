@@ -47,6 +47,13 @@ DEFAULT_RESPONSE = "잘 모르겠어요..."
 MENTION_RESPONSES = ["??"]
 
 # ─────────────────────────────────────────
+# ⏰ 알림 기능
+# ─────────────────────────────────────────
+async def send_reminder(channel, user, memo, wait_seconds):
+    await asyncio.sleep(wait_seconds)
+    await channel.send(f"{user.mention} ⏰ {memo}")
+
+# ─────────────────────────────────────────
 # 💬 자동응답 이벤트
 # ─────────────────────────────────────────
 @bot.event
@@ -74,6 +81,25 @@ async def on_message(message):
     # 루이야만 단독으로 쳤을 때
     if content == "":
         await message.channel.send("네")
+        await bot.process_commands(message)
+        return
+
+       # ⏰ 알림
+    if content.startswith("알림 "):
+        parts = content[3:].strip().split(" ", 1)
+        try:
+            time_str = parts[0]
+            memo = parts[1] if len(parts) > 1 else "알림"
+            now = datetime.now()
+            target = datetime.strptime(f"{now.year}-{now.month}-{now.day} {time_str}", "%Y-%m-%d %H:%M")
+            wait = (target - now).total_seconds()
+            if wait <= 0:
+                await message.channel.send("이미 지난 시간이에요...")
+            else:
+                await message.channel.send(f"⏰ {time_str}에 알려드릴게요")
+                asyncio.create_task(send_reminder(message.channel, message.author, memo, wait))
+        except:
+            await message.channel.send("이렇게 써주세요: `루이야 알림 18:30 숙제하기`")
         await bot.process_commands(message)
         return
 
@@ -145,6 +171,7 @@ async def ping(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
 
 
 
