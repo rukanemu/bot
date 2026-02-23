@@ -4,11 +4,12 @@ from discord import app_commands
 import yt_dlp
 import random
 import os
-import aiohttp
+import asyncio
+import pytz
 from datetime import datetime
+
 TOKEN = os.environ.get("TOKEN")
 KST = pytz.timezone('Asia/Seoul')
-NEIS_KEY = os.environ.get("NEIS_KEY")
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -18,28 +19,27 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # 💬 자동응답 데이터
 # ─────────────────────────────────────────
 responses = {
-    ("안녕", "ㅎㅇ", "하이", "헬로"):                      "안녕하세요",
-    ("심심",):                                              "저도 친구가 없어서 심심해요",
-    ("사랑해", "좋아해"):                                   "네...",
-    ("몇 살", "몇살", "나이"):                              "7살이에요",
-    ("아키토",):                                            "팬케이크...?",
-    ("쿼쥐",):                                              "무서워요",
-    ("잘 자", "잘자", "굿나잇", "ㅈㅈ"):                   "안녕히 주무세요",
-    ("염소",):                                              "앗 밟혔다",
-    ("처녀",):                                              "앗 밟았다",
-    ("씨발", "시발", "ㅗ", "새끼"):                        "욕하지 마세요...",
-    ("루이츠카",):                               "🎈🌟",
-    ("루이네네", "루이에무", "츠카네네", "츠카에무", "츠카루이"):       "좆같은소리하지마",
-    ("네네에무",):                                          "🤖🍬",
-    ("츠카사",):                                            "🌟",
-    ("에무",):                                              "🍬",
-    ("네네",):                                              "🤖",
-    ("토키슌이치",):                                              "아...빠...?",
-    ("린타로",):                                              "어디서 들어본 목소리에요",
-    ("오리너구리", "오구리"):                                              "🥰",
-    ("자폭",):                                              "",
-    ("귀여워",):                                              "아... 그쪽 취향...",
-
+    ("루이네네", "루이에무", "츠카네네", "츠카에무", "츠카루이"):  "좆같은소리하지마",
+    ("네네에무",):                                               "🤖🍬",
+    ("루이츠카",):                                               "🎈🌟",
+    ("안녕", "ㅎㅇ", "하이", "헬로"):                           "안녕하세요",
+    ("심심",):                                                   "저도 친구가 없어서 심심해요",
+    ("사랑해", "좋아해"):                                        "네...",
+    ("츠카사",):                                                 "🌟",
+    ("에무",):                                                   "🍬",
+    ("네네",):                                                   "🤖",
+    ("몇 살", "몇살", "나이"):                                   "7살이에요",
+    ("아키토",):                                                 "팬케이크...?",
+    ("쿼쥐",):                                                   "무서워요",
+    ("잘 자", "잘자", "굿나잇", "ㅈㅈ"):                        "안녕히 주무세요",
+    ("염소",):                                                   "앗 밟혔다",
+    ("처녀",):                                                   "앗 밟았다",
+    ("씨발", "시발", "ㅗ", "새끼"):                             "욕하지 마세요...",
+    ("토키슌이치",):                                             "아...빠...?",
+    ("린타로",):                                                 "어디서 들어본 목소리에요",
+    ("오리너구리", "오구리"):                                    "🥰",
+    ("자폭",):                                                   "",
+    ("귀여워",):                                                 "아... 그쪽 취향...",
 }
 
 DEFAULT_RESPONSE = "잘 모르겠어요..."
@@ -62,44 +62,40 @@ async def on_message(message):
 
     content = message.content.lower()
 
-    # 루이야 or 멘션 없으면 무시
     triggered = bot.user.mentioned_in(message) and not message.mention_everyone
     if not triggered and not content.startswith("루이야"):
         await bot.process_commands(message)
         return
 
-    # 멘션만 했을 때 (루이야 없이)
     if triggered and "루이야" not in content:
         await message.channel.send(random.choice(MENTION_RESPONSES))
         await bot.process_commands(message)
         return
 
-    # 루이야 뒤의 내용만 추출
     content = content.replace("루이야", "", 1).strip()
 
-    # 루이야만 단독으로 쳤을 때
     if content == "":
         await message.channel.send("네")
         await bot.process_commands(message)
         return
 
-   # ⏰ 알림
+    # ⏰ 알림
     if content.startswith("알림 "):
         parts = content[3:].strip().split(" ", 1)
         try:
             time_str = parts[0]
             memo = parts[1] if len(parts) > 1 else "알림!"
-            now = datetime.now()
+            now = datetime.now(KST)
             hour, minute = map(int, time_str.split(":"))
             target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
             wait = (target - now).total_seconds()
             if wait <= 0:
                 await message.channel.send("이미 지난 시간이에요...")
             else:
-                await message.channel.send(f"⏰ {time_str}에 알려드릴게요 ({int(wait//60)}분 후)")
+                await message.channel.send(f"⏰ {time_str}에 알려드릴게요! ({int(wait//60)}분 후)")
                 asyncio.create_task(send_reminder(message.channel, message.author, memo, wait))
-        except Exception as e:
-            await message.channel.send(f"이렇게 써주세요: `루이야 알림 18:30 숙제하기`")
+        except:
+            await message.channel.send("이렇게 써줘요! `루이야 알림 18:30 숙제하기`")
         await bot.process_commands(message)
         return
 
@@ -120,7 +116,7 @@ async def on_message(message):
             result = "지는 게 이기는 거에요"
         else:
             result = "이겼다"
-        await message.channel.send(f" {bot_choice}! {result}")
+        await message.channel.send(f"{bot_choice}! {result}")
         await bot.process_commands(message)
         return
 
@@ -168,7 +164,6 @@ async def on_ready():
 async def ping(interaction: discord.Interaction):
     latency = round(bot.latency * 1000)
     await interaction.response.send_message(f"🏓 퐁! `{latency}ms`")
-
 
 bot.run(TOKEN)
 
