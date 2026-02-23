@@ -7,9 +7,8 @@ import os
 import aiohttp
 from datetime import datetime
 TOKEN = os.environ.get("TOKEN")
+KST = pytz.timezone('Asia/Seoul')
 NEIS_KEY = os.environ.get("NEIS_KEY")
-SCHOOL_CODE = "J100000135"  # 인천해송고등학교
-OFFICE_CODE = "J10"  # 인천시교육청
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -84,22 +83,23 @@ async def on_message(message):
         await bot.process_commands(message)
         return
 
-       # ⏰ 알림
+   # ⏰ 알림
     if content.startswith("알림 "):
         parts = content[3:].strip().split(" ", 1)
         try:
             time_str = parts[0]
-            memo = parts[1] if len(parts) > 1 else "알림"
+            memo = parts[1] if len(parts) > 1 else "알림!"
             now = datetime.now()
-            target = datetime.strptime(f"{now.year}-{now.month}-{now.day} {time_str}", "%Y-%m-%d %H:%M")
+            hour, minute = map(int, time_str.split(":"))
+            target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
             wait = (target - now).total_seconds()
             if wait <= 0:
                 await message.channel.send("이미 지난 시간이에요...")
             else:
-                await message.channel.send(f"⏰ {time_str}에 알려드릴게요")
+                await message.channel.send(f"⏰ {time_str}에 알려드릴게요 ({int(wait//60)}분 후)")
                 asyncio.create_task(send_reminder(message.channel, message.author, memo, wait))
-        except:
-            await message.channel.send("이렇게 써주세요: `루이야 알림 18:30 숙제하기`")
+        except Exception as e:
+            await message.channel.send(f"이렇게 써주세요: `루이야 알림 18:30 숙제하기`")
         await bot.process_commands(message)
         return
 
@@ -171,6 +171,7 @@ async def ping(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
 
 
 
