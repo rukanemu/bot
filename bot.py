@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # 💬 자동응답 데이터
 # ─────────────────────────────────────────
 responses = {
-    ("니얼굴 키토",):                                            "선은 넘지 말자",
+    ("니얼굴아키토",):                                            "선은 넘지 말자",
     ("루이네네", "루이에무", "츠카네네", "츠카에무", "츠카루이"):  "좆같은소리하지마",
     ("네네에무",):                                               "🤖🍬",
     ("루이츠카",):                                               "🎈🌟",
@@ -59,6 +59,9 @@ responses = {
     ("가자",):                                                 "저 빛을 향해",
     ("구미",):                                                 "🥕💚",
     ("니얼굴",):                                                 "니얼굴의 악마를 왜 깨웠습니까",
+    ("싸우자", "야차뜨자",):                                                 "하...안되겠네 18살이 돼야겠어",
+    ("미안해",):                                                 "그러게 왜그랬어요",
+    ("잘못했어",):                                                 "안돼 돌아가",
 }
 
 DEFAULT_RESPONSE = "ㅇㅇ"
@@ -191,6 +194,7 @@ async def ping(interaction: discord.Interaction):
     await interaction.response.send_message(f"🏓 퐁! `{latency}ms`")
 
 bot.run(TOKEN)
+
 
 
 
