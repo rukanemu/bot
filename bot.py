@@ -62,6 +62,7 @@ responses = {
     ("싸우자", "야차뜨자",):                                                 "하...안되겠네 18살이 돼야겠어",
     ("미안해",):                                                 "그러게 왜그랬어요",
     ("잘못했어",):                                                 "안돼 돌아가",
+    ("야채", "채소"):                                                 "ㅗ",
 }
 
 DEFAULT_RESPONSE = "ㅇㅇ"
@@ -194,6 +195,7 @@ async def ping(interaction: discord.Interaction):
     await interaction.response.send_message(f"🏓 퐁! `{latency}ms`")
 
 bot.run(TOKEN)
+
 
 
 
